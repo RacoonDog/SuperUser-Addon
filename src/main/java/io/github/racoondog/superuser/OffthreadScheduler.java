@@ -6,6 +6,7 @@ import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
+// todo benchmark and improve
 public final class OffthreadScheduler implements AutoCloseable {
     public static final OffthreadScheduler INSTANCE = new OffthreadScheduler();
 
