@@ -32,6 +32,7 @@ public final class OffthreadScheduler implements AutoCloseable {
             while (true) {
                 if (this.stopping) return;
                 Task next = this.queue.take();
+                /*
                 long scheduled = next.stamp();
 
                 while (scheduled - 100 > System.currentTimeMillis()) {
@@ -42,6 +43,7 @@ public final class OffthreadScheduler implements AutoCloseable {
                 while (scheduled > System.currentTimeMillis()) {
                     Thread.yield();
                 }
+                 */
 
                 while (next != null && next.stamp() <= System.currentTimeMillis()) {
                     next.runnable().run();
@@ -72,7 +74,7 @@ public final class OffthreadScheduler implements AutoCloseable {
 
         @Override
         public long getDelay(@NotNull TimeUnit unit) {
-            long delayMillis = System.currentTimeMillis() - stamp();
+            long delayMillis = stamp() - System.currentTimeMillis();
             return unit.convert(delayMillis, TimeUnit.MILLISECONDS);
         }
     }
