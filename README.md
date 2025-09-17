@@ -13,6 +13,10 @@ Similar to the vanilla `/execute` command, but for Meteor Client.
 - `delayed (ticks|millis|seconds) <delay>`: Suspends execution for the given delay. Subcommands following `delayed` will
 also be evaluated after the delay. Using a delay with `millis` or `seconds` will cause the following subcommands and
 command to be executed offthread, so take care to use only thread safe commands.
+- `repeat <times> instant`: Immediately forks command execution X times.
+- `repeat <times> (ticks|millis|seconds) <delay>`: Do command execution X times with the given delay between executions.
+Using a delay with `millis` or `seconds` will cause the following subcommands and command to be executed offthread, so
+take care to use only thread safe commands. Use `delayed` to add an initial delay.
 - `store (result|success) <variable>`: Stores either the `int` result or `boolean` success of the command specified in
 the `run` subcommand to the Starscript variable specified in `variable`
 

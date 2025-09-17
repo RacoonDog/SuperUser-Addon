@@ -1,5 +1,6 @@
 package io.github.racoondog.superuser.commands;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import org.meteordev.starscript.Script;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static meteordevelopment.meteorclient.commands.Commands.DISPATCHER;
@@ -63,6 +65,25 @@ public class ExecuteCommand extends Command {
                 (r, ctx) -> OffthreadScheduler.INSTANCE.add(r, System.currentTimeMillis() + LongArgumentType.getLong(ctx, "delay") * 1000L)
             )))
         );
+
+        builder.then(literal("repeat").then(argument("times", IntegerArgumentType.integer(2))
+            .then(literal("instant").fork(
+                root,
+                context -> Collections.nCopies(IntegerArgumentType.getInteger(context, "times"), context.getSource())
+            ))
+            .then(literal("ticks").then(addRepeatArguments(
+                root, argument("delay", LongArgumentType.longArg(1)),
+                (ctx, r, i, delay, now) -> TickScheduler.INSTANCE.add(r, delay * i)
+            )))
+            .then(literal("millis").then(addRepeatArguments(
+                root, argument("delay", LongArgumentType.longArg(1)),
+                (ctx, r, i, delay, now) -> OffthreadScheduler.INSTANCE.add(r, now + delay * i)
+            )))
+            .then(literal("seconds").then(addRepeatArguments(
+                root, argument("delay", LongArgumentType.longArg(1)),
+                (ctx, r, i, delay, now) -> OffthreadScheduler.INSTANCE.add(r, now + delay * 1000 * i)
+            )))
+        ));
 
         builder.then(literal("store")
             .then(addStoreArguments(root, literal("result"), true))
@@ -125,6 +146,22 @@ public class ExecuteCommand extends Command {
         return value == positive ? List.of(context.getSource()) : List.of();
     }
 
+    private ArgumentBuilder<CommandSource, ?> addRepeatArguments(
+        CommandNode<CommandSource> root,
+        ArgumentBuilder<CommandSource, ?> builder,
+        Repeater repeater
+    ) {
+        return ScheduleCommand.schedule(
+            root, builder,
+            (r, ctx) -> {
+                int times = IntegerArgumentType.getInteger(ctx, "times");
+                long delay = LongArgumentType.getLong(ctx, "delay");
+                long now = System.currentTimeMillis();
+                for (int i = 0; i < times; i++) repeater.repeat(ctx, r, i, delay, now);
+            }
+        );
+    }
+
     private ArgumentBuilder<CommandSource, ?> addStoreArguments( // todo defer result consumer on scheduled commands
         CommandNode<CommandSource> root, LiteralArgumentBuilder<CommandSource> builder, boolean requestResult
     ) {
@@ -144,5 +181,10 @@ public class ExecuteCommand extends Command {
     @FunctionalInterface
     interface Condition {
         boolean test(CommandContext<CommandSource> context) throws CommandSyntaxException;
+    }
+
+    @FunctionalInterface
+    interface Repeater {
+        void repeat(CommandContext<CommandSource> context, Runnable r, int index, long delay, long now) throws CommandSyntaxException;
     }
 }
