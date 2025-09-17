@@ -1,31 +1,33 @@
 {
   "schemaVersion": 1,
-  "id": "addon-template",
+  "id": "superuser",
   "version": "${version}",
-  "name": "Addon Template",
-  "description": "An addon template for Meteor Client addons.",
+  "name": "SuperUser Addon",
+  "description": "A Meteor Client addon for super users.",
   "authors": [
-    "seasnail"
+    "Crosby"
   ],
   "contact": {
-    "sources": "https://github.com/MeteorDevelopment/meteor-addon-template"
+    "sources": "https://github.com/RacoonDog/SuperUser-Addon"
   },
-  "icon": "assets/template/icon.png",
+  "license": "ARR",
+  "icon": "assets/superuser/icon.png",
   "environment": "client",
   "entrypoints": {
     "meteor": [
-      "com.example.addon.AddonTemplate"
+      "io.github.racoondog.superuser.SuperUser"
     ]
   },
   "mixins": [
-    "addon-template.mixins.json"
+    "superuser.mixins.json"
   ],
   "custom": {
     "meteor-client:color": "225,25,25"
   },
   "depends": {
     "java": ">=21",
-    "minecraft": ["${mc_version}", "1.21.7", "1.21.6"],
+    "fabric-loader": ">=0.16",
+    "minecraft": "*",
     "meteor-client": "*"
   }
 }
