@@ -18,6 +18,11 @@ public class ClientCommandSourceMixin implements SuperUserCommandSource {
     }
 
     @Override
+    public ReturnValueConsumer superuser$getResultConsumer() {
+        return this.consumer;
+    }
+
+    @Override
     public void superuser$consumeResult(boolean successful, int returnValue) {
         this.consumer.onResult(successful, returnValue);
         this.consumer = ReturnValueConsumer.EMPTY;

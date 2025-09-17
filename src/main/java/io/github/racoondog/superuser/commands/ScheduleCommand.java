@@ -8,11 +8,13 @@ import com.mojang.brigadier.context.ContextChain;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.CommandNode;
 import io.github.racoondog.superuser.OffthreadScheduler;
+import io.github.racoondog.superuser.SuperUser;
 import io.github.racoondog.superuser.SuperUserCommandSource;
 import io.github.racoondog.superuser.TickScheduler;
 import meteordevelopment.meteorclient.commands.Command;
 import meteordevelopment.meteorclient.utils.player.ChatUtils;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.ReturnValueConsumer;
 
 import java.util.List;
 
@@ -52,7 +54,15 @@ public class ScheduleCommand extends Command {
                 CommandContext<CommandSource> childContext = context.getChild();
                 CommandSource source = context.getSource();
 
+                if (source instanceof SuperUserCommandSource superUserSource) {
+                    SuperUser.COMMAND_DELAYED_CONSUMER_MAP.put(childContext, superUserSource.superuser$getResultConsumer());
+                }
+
                 scheduler.schedule(() -> ContextChain.tryFlatten(childContext).ifPresent(chain -> {
+                    if (source instanceof SuperUserCommandSource superUserSource) {
+                        superUserSource.superuser$addResultConsumer(SuperUser.COMMAND_DELAYED_CONSUMER_MAP.getOrDefault(childContext, ReturnValueConsumer.EMPTY));
+                    }
+
                     try {
                         chain.executeAll(source, SuperUserCommandSource.asResultConsumer());
                     } catch (CommandSyntaxException e) {

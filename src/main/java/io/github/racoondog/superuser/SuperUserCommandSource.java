@@ -6,6 +6,7 @@ import net.minecraft.command.ReturnValueConsumer;
 
 public interface SuperUserCommandSource {
     CommandSource superuser$addResultConsumer(ReturnValueConsumer consumer);
+    ReturnValueConsumer superuser$getResultConsumer();
     void superuser$consumeResult(boolean successful, int returnValue);
 
     static <S extends CommandSource> ResultConsumer<S> asResultConsumer() {
