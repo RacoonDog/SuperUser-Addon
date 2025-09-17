@@ -24,7 +24,7 @@ See `.execute delayed` documentation for more information
 ### `.starscript`
 
 - `.starscript eval <expression>` evaluates the expression and outputs the result
-- `.starscritpt get <variable>` gets the given variable from Starscript globals and outputs the value
+- `.starscript get <variable>` gets the given variable from Starscript globals and outputs the value
 
 # License
 
