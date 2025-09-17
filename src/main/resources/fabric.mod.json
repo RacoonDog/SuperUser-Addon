@@ -22,11 +22,11 @@
     "superuser.mixins.json"
   ],
   "custom": {
-    "meteor-client:color": "225,25,25"
+    "meteor-client:color": "144,213,255"
   },
   "depends": {
     "java": ">=21",
-    "fabric-loader": ">=0.16",
+    "fabricloader": ">=0.16",
     "minecraft": "*",
     "meteor-client": "*"
   }
