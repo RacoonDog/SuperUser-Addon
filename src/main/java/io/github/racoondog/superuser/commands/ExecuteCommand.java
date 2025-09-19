@@ -48,6 +48,50 @@ public class ExecuteCommand extends Command {
 
         builder.then(literal("run").redirect(DISPATCHER.getRoot()));
 
+        if (mc.getNetworkHandler() != null) {
+            builder.then(literal("send").then(argument("command", StringArgumentType.greedyString())
+                .executes(ctx -> {
+                    mc.getNetworkHandler().sendChatCommand(StringArgumentType.getString(ctx, "command"));
+                    return 1;
+                })
+                /* todo fix suggestions
+                .suggests((ctx, suggestionsBuilder) -> {
+                    ParsedCommandNode<?> node = ctx.getNodes().getLast();
+                    if (node.getNode() instanceof LiteralCommandNode<?>) return suggestionsBuilder.buildFuture();
+
+                    int start = node.getRange().getStart();
+                    String command = ctx.getInput().substring(
+                        start,
+                        Math.max(start, suggestionsBuilder.getStart())
+                    );
+
+                    CommandDispatcher<ClientCommandSource> dispatcher = mc.getNetworkHandler().getCommandDispatcher();
+                    ClientCommandSource commandSource = (ClientCommandSource) ctx.getSource();
+                    int cursor = suggestionsBuilder.getStart() - start;
+
+                    StringReader commandReader = new StringReader(command);
+                    commandReader.setCursor(cursor);
+
+                    ParseResults<ClientCommandSource> results = dispatcher.parse(commandReader, commandSource);
+                    return dispatcher.getCompletionSuggestions(results, cursor).thenApply(suggestions ->  new Suggestions(
+                        new StringRange(
+                            suggestions.getRange().getStart() + start,
+                            suggestions.getRange().getEnd() + start
+                        ),
+                        suggestions.getList().stream().map(suggestion -> new Suggestion(
+                            new StringRange(
+                                suggestion.getRange().getStart() + start,
+                                suggestion.getRange().getEnd() + start
+                            ),
+                            suggestion.getText(),
+                            suggestion.getTooltip()
+                            )).toList()
+                    ));
+                })
+                 */
+            ));
+        }
+
         builder.then(addConditionArguments(root, literal("if"), true));
         builder.then(addConditionArguments(root, literal("unless"), false));
 
